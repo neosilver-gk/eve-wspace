@@ -90,6 +90,7 @@ var autoRefreshInterval = 15000; // Interval in milliseconds
 var silentSystem = false; // Are systems added automatically without a pop-up?
 var kspaceIGBMapping = false; // Do we map K<>K connections from the IGB?
 var zenMode = false;
+var activeSysID;
 
 function s(n) { //apply scaling factor, short function name so it's quick to type
     return Math.ceil(n * scalingFactor)
@@ -106,10 +107,17 @@ $(document).ready(function () {
 
     $('#mapDiv').html(ajax_image);
     scale(scalingFactor);
-
-    $('.slider').slider().on('slide', function (ev) {
-        scale(ev.value);
+    
+    $( ".slider" ).slider({
+      value: scalingFactor,
+      min: 0,
+      max: 2,
+      step: 0.1,
+      slide: function( event, ui ) {
+        scale(ui.value);
+      }
     });
+    
     updateTimerID = setInterval(doMapAjaxCheckin, 5000);
 
     if (autoRefresh === true) {
@@ -160,10 +168,10 @@ $(document).ready(function () {
 function processAjax(data) {
     if (data.dialogHTML) {
         if (data.dialogHTML !== 'silent') {
+            recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
             modalHolder.html(data.dialogHTML);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         } else {
             RefreshMap();
         }
@@ -203,6 +211,10 @@ function ToggleSilentAdd() {
         silentSystem = false;
         $('#btnSilentAdd').find('> span').text('OFF');
     }
+}
+
+function ToggleLegend() {
+    $("#legendDiv").toggle();
 }
 
 function ToggleKspaceMapping() {
@@ -257,6 +269,7 @@ function DisplaySystemDetails(msID, sysID) {
         type: "GET",
         url: address,
         success: function (data) {
+	        activeSysID = sysID
             $('#sysInfoDiv').empty().html(data);
             LoadSignatures(msID, true);
             $.ajax({
@@ -275,10 +288,43 @@ function DisplaySystemDetails(msID, sysID) {
                 BulkImport(msID);
                 e.preventDefault();
             });
+            setEffectTip();
             focusMS = msID;
             StartDrawing();
         }
     });
+}
+
+function setEffectTip() {
+    var effect = $('#sysEffect').text();
+    if  (effect) {
+        //var cls = $('#sysClass').text();
+        var tip = "";
+        var effectcolor = "#aaaaaa"; 
+        if (effect == "Cataclysmic Variable") {
+            tip = "Boosts remote repair, shield transfer, capacitor capacity/recharge; penalizes local armor repair, shield boost, and remote capacitor";
+            effectcolor = effectColorCataclysmic; 
+        } else if (effect == "Magnetar") {
+            tip = "Boosts damage, missile radius; penalizes drone tracking, targeting range, tracking speed, target painter";
+            effectcolor = effectColorMagnetar; 
+        } else if (effect == "Red Giant") {
+            tip = "Boosts overload bonus, smart bomb range/damage, bomb damage; penalizes overload heat damage";
+            effectcolor = effectColorRedGiant; 
+        } else if (effect == "Pulsar") {
+            tip = "Boosts Shield HP, NOS/neut drain amount; penalizes armor resists, capacitor recharge, signature radius";
+            effectcolor = effectColorPulsar; 
+        } else if (effect == "Wolf-Rayet Star") {
+            tip = "Boosts Armor HP, small weapon damage, signature radius; penalizes shield resists";
+            effectcolor = effectColorWolfRayet; 
+        } else if (effect == "Black Hole") {
+            tip = "Boosts missile (explosion) velocity, ship velocity, targeting range; penalizes statis webifier, inertia";
+            effectcolor = effectColorBlackHole; 
+        } else {
+            tip = "No special effect";
+        }
+        $('#sysEffect').attr('title',tip);
+        $('#sysEffect').css('color',effectcolor);
+    }
 }
 
 function GetPOSList(msID) {
@@ -326,7 +372,7 @@ function GetExportMap(mapID) {
         success: function (data) {
             var modalHolder = $('#modalHolder');
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         },
         error: function (error) {
             alert('Could not get the export dialog:\n\n' + error.responseText);
@@ -448,10 +494,11 @@ function GetAddPOSDialog(msID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -462,10 +509,11 @@ function GetSiteSpawns(msID, sigID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -484,7 +532,7 @@ function AddPOS(msID) {
         data: $('#addPOSForm').serialize(),
         success: function (data) {
             GetPOSList(msID);
-            $('#modalHolder').modal('hide');
+            $('#modalHolder').parent().hide();
             btnAddPOS.html('Add POS');
             btnAddPOS.removeClass('disabled');
         },
@@ -514,10 +562,11 @@ function GetEditPOSDialog(posID, msID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -534,7 +583,7 @@ function EditPOS(posID, msID) {
         data: $('#editPOSForm').serialize(),
         success: function (data) {
             GetPOSList(msID);
-            $('#modalHolder').modal('hide');
+            $('#modalHolder').parent().hide();
             btnEditPOS.html('Save POS');
             btnEditPOS.removeClass('disabled');
         },
@@ -648,7 +697,7 @@ function AddSignature(msID) {
 }
 
 function LoadSignatures(msID, startTimer) {
-    var address = "system/" + msID + "/signatures/";
+    var address = "system/" + msID + "/signatures/list/" + activeSysID + "/";
     $.ajax({
         url: address,
         type: "GET",
@@ -722,10 +771,11 @@ function GetAddSystemDialog(msID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -742,6 +792,24 @@ function AddSystem() {
                 RefreshMap();
             }, 500);
         }
+    });
+}
+
+function AddSystemFromSig(nr) {
+    var address = "system/new/";
+    var input = $('#sysAddFromSigForm' + nr).serialize();
+    $.ajax({
+        type: "POST",
+        url: address,
+        data: input,
+        success: function (data) {
+            setTimeout(function () {
+                RefreshMap();
+            }, 500);
+        },
+        error: function(e) {
+    		console.log(e);
+  		},
     });
 }
 
@@ -767,10 +835,11 @@ function GetBulkImport(msID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -781,10 +850,11 @@ function GetEditWormholeDialog(whID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 
@@ -808,10 +878,11 @@ function GetEditSystemDialog(msID) {
         url: address,
         type: "GET",
         success: function (data) {
+	        recreateModalHolder();
             var modalHolder = $('#modalHolder');
-            modalHolder.empty();
+            
             modalHolder.html(data);
-            modalHolder.modal('show');
+            modalHolder.parent().show();
         }
     });
 }
@@ -996,7 +1067,7 @@ function InitializeRaphael() {
 
 function GetSystemX(system) {
     if (system) {
-        var startX = s(70);
+        var startX = s(50);
         return startX + indentX * system.LevelX;
     } else {
         alert("GetSystemX: System is null or undefined");

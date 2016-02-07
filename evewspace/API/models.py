@@ -366,8 +366,8 @@ class APIAccessType(models.Model):
 class APIAccessRequirement(models.Model):
     """Stores the required access for member API keys for a corp."""
     corps_required  = models.ManyToManyField(Corporation,
-            related_name="api_requirements", null=True)
+            related_name="api_requirements")
     requirement = models.ForeignKey(APIAccessType,
             related_name="required_by")
-    groups_required = models.ManyToManyField(Group, null=True,
+    groups_required = models.ManyToManyField(Group,
             related_name="api_requirements")

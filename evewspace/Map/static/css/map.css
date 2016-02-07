@@ -11,18 +11,14 @@
     opacity: 0.5;
     filter: alpha(opacity = 50);
 }
-.systemPanelHeader
-{
-    text-align:center;
-}
 .footer
 {
     margin-bottom: 150px;
 }
 #sysTabHolder
 {
-    width: 600px;
-    padding-top: 5px;
+    width: 700px;
+    padding: 10px;
 }
 .sysDetailsFooter
 {
@@ -30,12 +26,12 @@
 }
 .systemTooltip
 {
-    width: 300px;
+    min-width: 300px;
     display: none;
 }
 .wormholeTooltip
 {
-    width: 200px;
+    width: 250px;
     display: none;
 }
 .systemStatsList {
@@ -60,23 +56,38 @@
 }
 .occupiedTooltip
 {
-    width: 90%;
+    width: 95%;
     white-space: pre-wrap;       /* css-3 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    border-radius: 5px;
+    padding: 5px;
+
+}
+.statusText
+{
+    width: 95%;
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    border-radius: 5px;
 
 }
 .infoTooltip
 {
     margin-top: 10px;
-    width: 90%;
+    width: 95%;
     white-space: pre-wrap;       /* css-3 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    border-radius: 5px;
+    padding: 5px;
 
 }
 .occupiedText
@@ -88,6 +99,7 @@
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    border-radius: 5px;
 
 }
 .detailsLeft
@@ -101,7 +113,6 @@
 .infoText
 {
     text-align: left;
-    width: 100%;
     white-space: pre-wrap;       /* css-3 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
@@ -121,6 +132,7 @@
 {
     text-align: left;
     white-space: nowrap;
+    margin-top: 10px;
 }
 .sysSigsList
 {
@@ -193,7 +205,6 @@ textarea
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   position: relative;
   z-index: 3;
-  width: auto;
 }
 
 /* arrows - :before and :after */
@@ -219,9 +230,7 @@ textarea
   top: 21px;
   content: '';
 }
-#sysInfoDiv {
-    margin-left: 15px;
-}
+
 .sysInfoCombinedDiv h4 {
     clear: both;
     display: block;
@@ -253,6 +262,7 @@ textarea
     padding: 0px;
     z-index: 100;
 }
+
 #backtotop {
     background: url(../images/back_to_top.png);
     width: 24px;
@@ -262,6 +272,7 @@ textarea
     cursor: pointer;
     padding-bottom: 3px;
 }
+
 #tobuttons {
     background: url(../images/to_buttons.png);
     width: 24px;
@@ -274,21 +285,26 @@ textarea
 label {
     display: inline;
 }
+
 label[for=massStatusReduced],label[for=sysTypeImportant] {
     font-weight: bold;
     color: #fffc00;
 }
+
 label[for=massStatusNormal], label[for=sysTypeRegular] {
     font-weight: bold;
     color: #00ff00;
 }
+
 label[for=massStatusCritical], label[for=sysTypeDangerous] {
     font-weight: bold;
     color: #ff0000;
 }
+
 #legendDiv {
-    margin-left: 24px;
+    display: none;
 }
+
 #legendDiv ul.inline {
     display: inline;
 }
@@ -328,14 +344,52 @@ ul#moveDropdown li {
     cursor: pointer;
 }
 
+.sysSigsTable tr:hover {
+    background-color: #2B3039;
+}
+
 #bulkSigForm {
-  margin-bottom: 10px;
+    display: inline-block;
+    margin-bottom: 8px;
 }
+
 #bulkSigForm textarea {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
+
 #pasteField {
-    width: 350px;
     font-size: 12px;
     line-height: 12px;
+    width: 380px;
+    height: 3em;
 }
+
+#sysInfoTab {
+    margin-bottom: 3px;
+}
+
+#sigAddForm, #sigEditForm {
+    margin-bottom: 3px;
+}
+
+.sysInfoSysname {
+    float: left;
+    font-size: 12pt;
+    display: inline;
+    margin: 0px 7px 0px 3px;
+    line-height: 34px;
+    color: white;
+}
+
+.content {
+  padding-top: 0;
+}
+
+#id_sigid { 
+	width: 100px;	
+}
+
+.sigAddFormDiv {
+	margin-left: 25px;	
+}
+
